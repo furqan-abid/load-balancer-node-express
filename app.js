@@ -9,6 +9,8 @@ app.use(cors({
     optionsSuccessStatus:200
 }))
 
-app.use(morgan('combined'))
+app.use(morgan('dev'))
+
+
 
 module.exports = app
