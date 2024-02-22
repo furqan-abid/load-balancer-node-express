@@ -17,6 +17,9 @@ process.on('uncaughtException', function(err) {
 app1.get("/app",(req,res)=>{
     res.send(`Hello from server! Host: 3000 ${process.env.HOSTNAME}`);
 })
+app1.get("/app/healthCheck",(req,res)=>{
+    res.status(200).end("working")
+})
 
 const firstServer= app1.listen(3000,()=>{
     console.log(`server is runing on ${3000}`);
@@ -25,6 +28,9 @@ app2.get("/app",(req,res)=>{
     res.send(`Hello from server! Host 3001: ${process.env.HOSTNAME}`);
 })
 
+app2.get("/app/healthCheck",(req,res)=>{
+    res.status(200).end("working")
+})
 const secondServer= app2.listen(3001,()=>{
     console.log(`server is runing on ${3001}`);
 })

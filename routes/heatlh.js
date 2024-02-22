@@ -1,4 +1,4 @@
-const { default: axios } = require("axios")
+const axios = require("axios")
 const express = require("express")
 const { servers } = require("../config/servers")
 
@@ -12,6 +12,7 @@ router.get("/health",async(req,res,next)=>{
 
         try{
             let res = await axios.get(`http://${server.host}:${server.port}/app/healthcheck`)
+            console.log(res);
             if(res.status===200){
                 results.push({
                     id:server.port,
@@ -33,7 +34,7 @@ router.get("/health",async(req,res,next)=>{
         }
     }
 
-    res.json(results)
+    res.json({results})
 })
 
 module.exports = router

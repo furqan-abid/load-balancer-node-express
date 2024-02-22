@@ -2,6 +2,7 @@ const {app} = require("./app");
 const https = require("https");
 const fs = require("fs")
 const proxyRouter = require("./routes/proxy")
+const healthRouter = require("./routes/heatlh")
 
 const options = {
     key:fs.readFileSync('./ssl/key.pem'),
@@ -16,6 +17,7 @@ process.on('uncaughtException', function(err) {
 })
 
 app.use('/app',proxyRouter)
+app.use(healthRouter)
 
 const server= https.createServer(options,app).listen(443,()=>{
     console.log(`server is runing on ${443}`);
