@@ -1,4 +1,4 @@
-const app = require("./app");
+const {app} = require("./app");
 const https = require("https");
 const fs = require("fs")
 const proxyRouter = require("./routes/proxy")

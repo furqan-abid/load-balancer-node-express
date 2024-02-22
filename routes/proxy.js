@@ -4,7 +4,8 @@ const { createProxyMiddleware } = require('http-proxy-middleware')
 const router = express.Router()
 
 const servers = [
-    { host: 'localhost', port: 3000 ,weight:1}
+    { host: 'localhost', port: 3000 ,weight:1},
+    { host: 'localhost', port: 3001 ,weight:1}
 ]
 
 const proxyOptions = {

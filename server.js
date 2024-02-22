@@ -1,4 +1,4 @@
-const app = require("./app");
+const {app1,app2} = require("./app");
 const https = require("https");
 const fs = require("fs")
 
@@ -14,20 +14,27 @@ process.on('uncaughtException', function(err) {
     process.exit(1);
 })
 
-app.get("/app",(req,res)=>{
-    res.send(`Hello from server! Host: ${process.env.HOSTNAME}`);
+app1.get("/app",(req,res)=>{
+    res.send(`Hello from server! Host: 3000 ${process.env.HOSTNAME}`);
 })
 
-const server= app.listen(3000,()=>{
+const firstServer= app1.listen(3000,()=>{
     console.log(`server is runing on ${3000}`);
 })
-
-
-//Unhandled promise rejection
-process.on("unhandledRejection",(err)=>{
-    console.log(`Error: ${err}`);
-    console.log(`shutting down the server due to unhandled promise rejection`);
-    server.close(()=>{
-        process.exit(1);
-    })
+app2.get("/app",(req,res)=>{
+    res.send(`Hello from server! Host 3001: ${process.env.HOSTNAME}`);
 })
+
+const secondServer= app2.listen(3001,()=>{
+    console.log(`server is runing on ${3001}`);
+})
+
+
+// //Unhandled promise rejection
+// process.on("unhandledRejection",(err)=>{
+//     console.log(`Error: ${err}`);
+//     console.log(`shutting down the server due to unhandled promise rejection`);
+//     server.close(()=>{
+//         process.exit(1);
+//     })
+// })
