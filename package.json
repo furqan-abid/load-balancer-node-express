@@ -12,6 +12,7 @@
   "author": "furqan",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.7",
     "cluster": "^0.7.7",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
