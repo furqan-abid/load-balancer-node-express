@@ -4,15 +4,12 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const { servers } = require('../config/servers');
 const fs = require('fs');
 const https = require('https');
-
 const router = express.Router()
-
 const options = new https.Agent({
     key:fs.readFileSync('./ssl/key.pem'),
     cert:fs.readFileSync('./ssl/cert.pem'),
     rejectUnauthorized: false
 })
-
 const proxyOptions = {
     target:"",
     changeOrigin:true,
@@ -22,16 +19,32 @@ const proxyOptions = {
     logLevel:'debug'
 }
 
-
-let healthyServers = []; // Initially, no healthy servers
-
-
+let healthyServers = [];
 
 let currIndex = 0
 
+let totals = []
+
+function intiWeights () {
+    totals=[]
+
+    let runningTotal = 0;
+
+    for(let i = 0 ;i<healthyServers.length;i++){
+        runningTotal += healthyServers[i].weight;
+        totals.push(runningTotal)
+    }
+}
+
+
+
 function getServer(){
-    currIndex = (currIndex+1) % servers.length
-    return servers[currIndex]
+    const random = Math.floor(Math.random() * totals[healthyServers.length-1])+1
+    for(let i = 0 ;i < totals.length;i++){
+        if(random<=totals[i]){
+            return servers[i]
+        }
+    }
 }
 
 router.all("*",(req,res)=>{
@@ -51,13 +64,13 @@ async function healthCheck() {
         console.log(healthyServers);
     } catch (error) {
         healthyServers = [];
-        console.log("error",error)
     }
 }
 
 
 healthCheck()
-// Periodic health check (every 10 seconds)
+intiWeights()
 setInterval(healthCheck, 10000);
+setInterval(intiWeights, 10000);
 
 module.exports = router
