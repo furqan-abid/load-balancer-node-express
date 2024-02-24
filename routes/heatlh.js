@@ -14,7 +14,7 @@ router.get("/health",async(req,res,next)=>{
             let res = await axios.get(`http://${server.host}:${server.port}/app/healthcheck`)
             if(res.status===200){
                 results.push({
-                    id:server.port,
+                    id:server.id,
                     status:"passing",
                     weight:server.weight
                 })
