@@ -19,6 +19,37 @@ const proxyOptions = {
   logLevel: "debug",
 };
 
+const Strategies = {
+  'random': random,
+  'roundrobin': roundRobin,
+  'weightedRoundRobin':weightedRoundRobin  
+};
+
+function Strategy() {
+  this.select = null;
+}
+
+function random() {
+  this.select = function () {};
+}
+
+function roundRobin() {
+  this.select = function () {};
+}
+
+function weightedRoundRobin() {
+  this.select = function () {
+    const random =
+      Math.floor(Math.random() * totals[healthyServers.length - 1]) + 1;
+    for (let i = 0; i < totals.length; i++) {
+      if (random <= totals[i]) {
+        return servers[i];
+      }
+    }
+  };
+}
+
+
 let healthyServers = [];
 let totals = [];
 const COOKIE_NAME = "lb-affinity";
@@ -35,13 +66,10 @@ function intiWeights() {
 }
 
 function getServer() {
-  const random =
-    Math.floor(Math.random() * totals[healthyServers.length - 1]) + 1;
-  for (let i = 0; i < totals.length; i++) {
-    if (random <= totals[i]) {
-      return servers[i];
-    }
-  }
+  const Strategy = Strategies["weightedRoundRobin"]
+  let selector = new Strategy()
+  const server = selector.select()
+  return server
 }
 
 router.all("*", (req, res) => {
@@ -51,21 +79,22 @@ router.all("*", (req, res) => {
 
   let server = getServer();
 
+  console.log("This is server", server);
   console.log(req.cookies[COOKIE_NAME]);
   if (!req.cookies[COOKIE_NAME]) {
-    res.cookie(COOKIE_NAME, server.id , {
+    res.cookie(COOKIE_NAME, server.id, {
       httpOnly: true,
     });
   } else {
     const affinityId = req.cookies[COOKIE_NAME];
     server = servers.find(
-      (s) => s.id == affinityId && healthyServers.find((hs)=>hs.id ==s.id)
-    ); 
+      (s) => s.id == affinityId && healthyServers.find((hs) => hs.id == s.id)
+    );
     if (!server) {
-      server = getServer()
-        res.cookie(COOKIE_NAME, server.id, {
-          httpOnly: true,
-        });
+      server = getServer();
+      res.cookie(COOKIE_NAME, server.id, {
+        httpOnly: true,
+      });
     }
   }
 
@@ -82,6 +111,8 @@ async function healthCheck() {
     healthyServers = response.data.results.filter(
       (result) => result.status === "passing"
     );
+
+    intiWeights();
     console.log(healthyServers);
   } catch (error) {
     healthyServers = [];
@@ -89,7 +120,6 @@ async function healthCheck() {
 }
 
 healthCheck();
-intiWeights();
 setInterval(healthCheck, 10000);
 setInterval(intiWeights, 10000);
 
