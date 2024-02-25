@@ -30,11 +30,18 @@ function Strategy() {
 }
 
 function random() {
-  this.select = function () {};
+  this.select = function () {
+    let random = Math.floor(Math.random() * servers.length);
+    return servers[random]
+  };
 }
 
+let currIndex = 0
 function roundRobin() {
-  this.select = function () {};
+  this.select = function () {
+    currIndex = (currIndex+1) % servers.length
+    return servers[currIndex]
+  };
 }
 
 function weightedRoundRobin() {
@@ -66,7 +73,7 @@ function intiWeights() {
 }
 
 function getServer() {
-  const Strategy = Strategies["weightedRoundRobin"]
+  const Strategy = Strategies["roundrobin"]
   let selector = new Strategy()
   const server = selector.select()
   return server
