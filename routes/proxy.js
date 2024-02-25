@@ -16,6 +16,9 @@ const proxyOptions = {
   onProxyReq: (ProxyReq, req) => {
     ProxyReq.setHeader("X-Special-Proxy-Header", "foobar");
   },
+  onProxyRes:(ProxyRes) => {
+    console.log(ProxyRes.headers);
+  },
   logLevel: "debug",
 };
 
