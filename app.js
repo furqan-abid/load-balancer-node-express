@@ -22,6 +22,5 @@ function createApp() {
 
 const app = createApp()
 const app1 = createApp()
-const app2 = createApp()
 
-module.exports ={ app,app1,app2};
+module.exports ={ app,app1};
